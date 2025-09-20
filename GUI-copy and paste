@@ -1,214 +1,520 @@
 (function() {
-    if(document.getElementById('lemon-blooket-gui')) return;
+    if(window.lemonSpecializedActive) return;
+    window.lemonSpecializedActive = true;
 
-    // Create panel container
-    const panel = document.createElement('div');
-    panel.id = 'lemon-blooket-gui';
-    panel.style.position = 'fixed';
-    panel.style.bottom = '30px';
-    panel.style.right = '30px';
-    panel.style.width = '340px';
-    panel.style.background = '#282c34';
-    panel.style.color = '#fff';
-    panel.style.borderRadius = '10px';
-    panel.style.boxShadow = '0 4px 16px rgba(0,0,0,0.3)';
-    panel.style.zIndex = '999999';
-    panel.style.fontFamily = 'sans-serif';
-    panel.style.userSelect = 'none';
-    panel.style.transition = 'opacity 0.2s';
+    // --- Styles ---
+    const style = document.createElement('style');
+    style.textContent = `
+    .lemon-gui-root {
+        position: fixed;
+        top: 40px;
+        left: 40px;
+        z-index: 999999;
+        font-family: 'Segoe UI', Arial, sans-serif;
+        display: flex;
+        flex-direction: row;
+        box-shadow: 0 8px 32px 2px #2c114e88;
+        border-radius: 24px;
+        background: none;
+        user-select: none;
+    }
+    .lemon-gui-sidebar {
+        width: 200px;
+        background: linear-gradient(180deg,#ad79e7 0%,#7842c5 100%);
+        border-top-left-radius: 24px;
+        border-bottom-left-radius: 24px;
+        padding: 0 0 0 0;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        box-shadow: 1px 0 0 #ffffff10;
+    }
+    .lemon-gui-sidebar-header {
+        font-size: 2.2em;
+        font-weight: bold;
+        color: #fff;
+        padding: 22px 0 6px 28px;
+        letter-spacing: 1px;
+        border-bottom: 2px solid #fff3;
+        margin-bottom: 10px;
+    }
+    .lemon-gui-discord-btn {
+        background: #34aef7;
+        color: #fff;
+        border-radius: 12px;
+        font-size: 1.1em;
+        font-weight: bold;
+        margin: 0 24px 18px 24px;
+        padding: 8px 0;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 1px 8px #1977c566;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    .lemon-gui-sidebar-list {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-left: 12px;
+        margin-right: 8px;
+        margin-bottom: 16px;
+    }
+    .lemon-gui-sidebar-btn {
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 1.24em;
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        border-radius: 7px;
+        padding: 8px 14px 8px 10px;
+        cursor: pointer;
+        transition: background 0.23s;
+        font-weight: 500;
+    }
+    .lemon-gui-sidebar-btn.lemon-gui-selected {
+        background: linear-gradient(90deg,#fff4 0%,#fff0 100%);
+        color: #fff;
+        font-weight: bold;
+    }
+    .lemon-gui-headerbar {
+        position: absolute;
+        left: 200px;
+        top: -48px;
+        width: 710px;
+        background: #7842c5;
+        color: #fff;
+        border-radius: 14px 14px 0 0;
+        box-shadow: 0 -2px 16px #2c114e22;
+        padding: 7px 16px 8px 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 1.1em;
+    }
+    .lemon-gui-headerbar a {
+        color: #fff;
+        text-decoration: none;
+        font-weight: bold;
+        padding: 0 8px;
+        border-radius: 6px;
+        background: #ad79e7;
+        transition: background .18s;
+    }
+    .lemon-gui-headerbar a:hover {
+        background: #34aef7;
+    }
+    .lemon-gui-mainpanel {
+        min-width: 520px;
+        min-height: 420px;
+        background: linear-gradient(180deg,#ad79e7 0%,#7842c5 100%);
+        border-radius: 0 24px 24px 0;
+        margin-left: -8px;
+        box-shadow: 0 6px 32px #2c114e44;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+    }
+    .lemon-gui-section-label {
+        background: linear-gradient(90deg,#ffd655 0%,#ffc700 100%);
+        color: #6b2e7a;
+        font-size: 1.35em;
+        font-weight: bold;
+        border-radius: 13px;
+        margin-top: 32px;
+        margin-bottom: 18px;
+        padding: 7px 38px;
+        box-shadow: 0 2px 8px #ffecb4cc;
+        letter-spacing: 1px;
+        border: 2px solid #fff7;
+        text-align: center;
+        position: relative;
+        left: -28px;
+    }
+    .lemon-gui-cheatgrid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px 22px;
+        margin-bottom: 18px;
+        width: 85%;
+    }
+    .lemon-gui-cheatbox {
+        background: #7c3f7e;
+        color: #fff;
+        border-radius: 12px;
+        font-size: 1.1em;
+        font-weight: 500;
+        padding: 14px 12px 14px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        align-items: center;
+        box-shadow: 0 1px 8px #2c114e22;
+        border: none;
+        cursor: pointer;
+        min-width: 160px;
+        transition: background .17s;
+    }
+    .lemon-gui-cheatbox:active {
+        background: #6f3e74;
+    }
+    .lemon-gui-inputrow {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 8px;
+        align-items: center;
+        justify-content: center;
+    }
+    .lemon-gui-cheatinput, .lemon-gui-cheatselect {
+        border-radius: 8px;
+        border: none;
+        padding: 3px 10px;
+        font-size: 1em;
+        background: #9e6ad0;
+        color: #fff;
+        margin-right: 2px;
+        min-width: 54px;
+    }
+    .lemon-gui-cheatselect {
+        background: #ffd655;
+        color: #6b2e7a;
+        font-weight: bold;
+    }
+    .lemon-gui-panel-controls {
+        position: absolute;
+        right: 12px;
+        bottom: 12px;
+        display: flex;
+        gap: 4px;
+        z-index: 999;
+    }
+    .lemon-gui-panel-btn {
+        font-size: 1.26em;
+        border: none;
+        border-radius: 8px;
+        background: #34aef7;
+        color: #fff;
+        padding: 2px 12px 1px 12px;
+        cursor: pointer;
+        font-weight: bold;
+        box-shadow: 0 1px 6px #1977c544;
+        transition: background .16s;
+    }
+    .lemon-gui-panel-btn.lemon-gui-close {
+        background: #ea5b5b;
+    }
+    .lemon-gui-panel-btn.lemon-gui-min {
+        background: #ffd655;
+        color: #6b2e7a;
+    }
+    .lemon-gui-panel-btn.lemon-gui-drag {
+        background: #7c3f7e;
+    }
+    .lemon-gui-topinputs {
+        position: absolute;
+        top: 16px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 12px;
+        background: #fff3;
+        padding: 7px 18px;
+        border-radius: 11px;
+        align-items: center;
+        box-shadow: 0 2px 8px #ad79e7cc;
+        z-index: 2;
+    }
+    .lemon-gui-topinputs input {
+        width: 84px;
+        padding: 2px 8px;
+        border-radius: 7px;
+        border: none;
+        font-size: 1em;
+        background: #fff;
+        color: #7842c5;
+        font-weight: bold;
+    }
+    .lemon-gui-topinputs label {
+        font-weight: bold;
+        color: #7842c5;
+        font-size: 1em;
+    }
+    `;
+    document.head.appendChild(style);
 
-    // Create header
-    const header = document.createElement('div');
-    header.textContent = 'Lemon GUI Panel';
-    header.style.padding = '12px 16px';
-    header.style.fontWeight = 'bold';
-    header.style.background = '#3b4048';
-    header.style.cursor = 'move';
-    header.style.borderTopLeftRadius = '10px';
-    header.style.borderTopRightRadius = '10px';
+    // --- Sidebar content ---
+    const sidebarIcons = [
+        { id: 'alerts', emoji: '⚠️', label: 'Alerts' },
+        { id: 'global', emoji: '🌍', label: 'Global' },
+        { id: 'host', emoji: '💻', label: 'Host' },
+        { id: 'pirate', emoji: '🛳️', label: "Pirate's Voyage" },
+        { id: 'gold', emoji: '💎', label: 'Gold Quest' },
+        { id: 'cafe', emoji: '🍽️', label: 'Cafe' },
+        { id: 'crypto', emoji: '💵', label: 'Crypto Hack' },
+        { id: 'dinos', emoji: '🦕', label: 'Decorative Dinos' }
+    ];
 
-    // Create close button
-    const closeBtn = document.createElement('button');
-    closeBtn.textContent = '×';
-    closeBtn.style.position = 'absolute';
-    closeBtn.style.top = '8px';
-    closeBtn.style.right = '12px';
-    closeBtn.style.background = 'transparent';
-    closeBtn.style.border = 'none';
-    closeBtn.style.color = '#fff';
-    closeBtn.style.fontSize = '20px';
-    closeBtn.style.cursor = 'pointer';
-    closeBtn.style.fontWeight = 'bold';
+    // --- Cheat sections (add your logic to buttons as needed) ---
+    const cheatSections = {
+        global: {
+            label: "Global Cheats",
+            grid: [
+                { label: "Auto Answer", id: "auto-answer" },
+                { label: "Highlight Answers", id: "highlight-answers" },
+                { label: "Subtle Highlight Answers", id: "subtle-highlight" },
+                { label: "Freeze Leaderboard", id: "freeze-leaderboard" },
+                { label: "Percent Auto Answer", id: "percent-auto", input: true },
+                { label: "Use any Banner", id: "any-banner", select: ["Starter", "Gold", "Epic"] },
+                { label: "Spam Buy Blooks", id: "spam-buy", inputRow: [
+                    { placeholder: "Box", type: "text", width: 50 },
+                    { placeholder: "Amount", type: "number", width: 40 }
+                ]},
+                { label: "Flood Game", id: "flood-game", inputRow: [
+                    { placeholder: "Name", type: "text", width: 60 },
+                    { placeholder: "Amount", type: "number", width: 40 },
+                    { select: ["Chick", "Starter"] }
+                ]},
+                { label: "Show Unlocks", id: "show-unlocks" }
+            ]
+        },
+        fishing: {
+            label: "Fishing Frenzy Cheats",
+            grid: [
+                { label: "Always Frenzy Mode", id: "always-frenzy" },
+                { label: "Auto Catch Fish", id: "auto-catch" }
+            ]
+        },
+        gold: {
+            label: "Gold Quest Cheats",
+            grid: [
+                { label: "Auto Pick Chest", id: "auto-chest" },
+                { label: "Steal Gold", id: "steal-gold" }
+            ]
+        },
+        cafe: {
+            label: "Cafe Cheats",
+            grid: [
+                { label: "Infinite Food", id: "infinite-food" },
+                { label: "Instant Serve", id: "instant-serve" }
+            ]
+        },
+        crypto: {
+            label: "Crypto Hack Cheats",
+            grid: [
+                { label: "Auto Hack", id: "auto-hack" },
+                { label: "Max Crypto", id: "max-crypto" }
+            ]
+        },
+        pirate: {
+            label: "Pirate's Voyage Cheats",
+            grid: [
+                { label: "Instant Treasure", id: "instant-treasure" },
+                { label: "Max Cannon", id: "max-cannon" }
+            ]
+        },
+        dinos: {
+            label: "Decorative Dinos Cheats",
+            grid: [
+                { label: "Auto Grow", id: "auto-grow" },
+                { label: "Infinite Dinos", id: "infinite-dinos" }
+            ]
+        },
+        alerts: {
+            label: "Alerts",
+            grid: [
+                { label: "No active alerts", id: "none" }
+            ]
+        },
+        host: {
+            label: "Host Cheats",
+            grid: [
+                { label: "Host Only Cheat 1", id: "host-cheat1" },
+                { label: "Host Only Cheat 2", id: "host-cheat2" }
+            ]
+        }
+    };
 
-    closeBtn.onclick = () => panel.remove();
+    // --- Root GUI ---
+    const root = document.createElement('div');
+    root.className = 'lemon-gui-root';
 
-    // Panel content
-    const content = document.createElement('div');
-    content.style.padding = '16px';
-    content.innerHTML = `
-        <p>Welcome to Lemon's Blooket GUI!</p>
-        <button id="flood-btn" style="
-            display: block;
-            width: 100%;
-            padding: 10px;
-            background: #ffeb3b;
-            color: #282c34;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            margin-top: 10px;
-            cursor: pointer;
-            font-weight: bold;
-        ">Flood Server</button>
-        <div style="margin-top:16px">
-            <label for="flood-amount" style="font-size:14px;">Flood Amount:</label>
-            <input type="number" id="flood-amount" min="1" value="10" style="
-                width: 80px;
-                margin-left: 10px;
-                padding: 6px;
-                border-radius: 4px;
-                border: 1px solid #aaa;
-                font-size: 14px;
-            ">
-            <button id="send-flood-btn" style="
-                padding: 8px 16px;
-                background: #1e90ff;
-                color: #fff;
-                border: none;
-                border-radius: 6px;
-                font-size: 15px;
-                cursor: pointer;
-                font-weight: bold;
-                margin-left: 10px;
-            ">Send Flood</button>
-        </div>
-        <div style="margin-top:16px">
-            <label for="tokens-amount" style="font-size:14px;">Tokens to Give:</label>
-            <input type="number" id="tokens-amount" min="1" value="500" style="
-                width: 80px;
-                margin-left: 10px;
-                padding: 6px;
-                border-radius: 4px;
-                border: 1px solid #aaa;
-                font-size: 14px;
-            ">
-            <button id="give-tokens-btn" style="
-                padding: 8px 16px;
-                background: #4caf50;
-                color: #fff;
-                border: none;
-                border-radius: 6px;
-                font-size: 15px;
-                cursor: pointer;
-                font-weight: bold;
-                margin-left: 10px;
-            ">Give Tokens to Me</button>
-        </div>
-        <button id="unlock-all-blooks-btn" style="
-            display: block;
-            width: 100%;
-            padding: 10px;
-            background: #ff9800;
-            color: #fff;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            margin-top: 16px;
-            cursor: pointer;
-            font-weight: bold;
-        ">Unlock All Blooks</button>
-        <button id="spam-chat-btn" style="
-            display: block;
-            width: 100%;
-            padding: 10px;
-            background: #e91e63;
-            color: #fff;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            margin-top: 12px;
-            cursor: pointer;
-            font-weight: bold;
-        ">Spam Chat</button>
-        <button id="play-song-btn" style="
-            display: block;
-            width: 100%;
-            padding: 10px;
-            background: #00bcd4;
-            color: #fff;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            margin-top: 16px;
-            cursor: pointer;
-            font-weight: bold;
-        ">Play a Song</button>
-        <div id="lemon-song-player" style="margin-top: 16px;"></div>
-        <p style="margin-top:10px;font-size:12px;opacity:0.7;">
-            All buttons are for entertainment. Lemon branding in action!
-        </p>
+    // --- Sidebar ---
+    const sidebar = document.createElement('div');
+    sidebar.className = 'lemon-gui-sidebar';
+
+    // Sidebar header and Discord
+    const sidebarHeader = document.createElement('div');
+    sidebarHeader.className = 'lemon-gui-sidebar-header';
+    sidebarHeader.textContent = "Cheats v15.5";
+    sidebar.appendChild(sidebarHeader);
+
+    const discordBtn = document.createElement('button');
+    discordBtn.className = 'lemon-gui-discord-btn';
+    discordBtn.innerHTML = `<span style="font-size:1.35em;">🟦</span> Discord`;
+    discordBtn.onclick = () => window.open("https://discord.com/invite/blooket", "_blank");
+    sidebar.appendChild(discordBtn);
+
+    // Sidebar buttons
+    const sidebarList = document.createElement('div');
+    sidebarList.className = 'lemon-gui-sidebar-list';
+    sidebarIcons.forEach(mode => {
+        const btn = document.createElement('button');
+        btn.className = 'lemon-gui-sidebar-btn';
+        btn.innerHTML = `<span style="font-size:1.22em;">${mode.emoji}</span> ${mode.label}`;
+        btn.dataset.mode = mode.id;
+        btn.onclick = () => selectMode(mode.id, btn);
+        sidebarList.appendChild(btn);
+    });
+    sidebar.appendChild(sidebarList);
+
+    // --- Main panel ---
+    const mainPanel = document.createElement('div');
+    mainPanel.className = 'lemon-gui-mainpanel';
+
+    // --- Top input bar for gameId and token ---
+    const topInputs = document.createElement('div');
+    topInputs.className = 'lemon-gui-topinputs';
+    topInputs.innerHTML = `
+        <label>Game ID:</label>
+        <input id="lemon-gameid-input" type="text">
+        <label>Token:</label>
+        <input id="lemon-token-input" type="text">
+        <span style="font-size:1.2em;">🔑</span>
     `;
 
-    panel.appendChild(header);
-    panel.appendChild(closeBtn);
-    panel.appendChild(content);
-    document.body.appendChild(panel);
+    // --- Header bar (tips + github) ---
+    const headerBar = document.createElement('div');
+    headerBar.className = 'lemon-gui-headerbar';
+    headerBar.innerHTML = `
+      <span>Ctrl + E to hide | Ctrl + X for quick disable | Click and drag here</span>
+      <a href="https://github.com/LemonDoesStuff" target="_blank">GitHub - LemonDoesStuff</a>
+    `;
 
-    // Drag logic
-    let isDragging = false, startX, startY, startRight, startBottom;
-    header.onmousedown = function(e) {
-        isDragging = true;
-        startX = e.clientX;
-        startY = e.clientY;
-        startRight = parseInt(panel.style.right);
-        startBottom = parseInt(panel.style.bottom);
-        document.body.style.userSelect = 'none';
-    };
-    document.onmousemove = function(e) {
-        if(isDragging) {
-            panel.style.right = (startRight - (e.clientX - startX)) + 'px';
-            panel.style.bottom = (startBottom - (e.clientY - startY)) + 'px';
-        }
-    };
-    document.onmouseup = function() {
-        isDragging = false;
-        document.body.style.userSelect = '';
-    };
+    // --- Section label & cheat grid ---
+    const sectionLabel = document.createElement('div');
+    sectionLabel.className = 'lemon-gui-section-label';
 
-    // Button Rickroll logic
-    function rickroll() {
-        window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ', '_blank');
+    const cheatGrid = document.createElement('div');
+    cheatGrid.className = 'lemon-gui-cheatgrid';
+
+    function renderCheatSection(section) {
+        sectionLabel.textContent = section.label || "";
+        cheatGrid.innerHTML = "";
+        section.grid.forEach(cheat => {
+            const box = document.createElement('div');
+            box.className = 'lemon-gui-cheatbox';
+            box.textContent = cheat.label;
+
+            // Inputs, dropdowns, etc
+            if (cheat.input) {
+                box.innerHTML += `<input class="lemon-gui-cheatinput" type="number" min="0" value="0" style="width:54px">`;
+            }
+            if (cheat.select) {
+                box.innerHTML += `<select class="lemon-gui-cheatselect">${cheat.select.map(o=>`<option>${o}</option>`).join('')}</select>`;
+            }
+            if (cheat.inputRow) {
+                const row = document.createElement('div');
+                row.className = 'lemon-gui-inputrow';
+                cheat.inputRow.forEach(inp => {
+                    if (inp.select) {
+                        row.innerHTML += `<select class="lemon-gui-cheatselect">${inp.select.map(o=>`<option>${o}</option>`).join('')}</select>`;
+                    } else {
+                        row.innerHTML += `<input class="lemon-gui-cheatinput" type="${inp.type}" placeholder="${inp.placeholder}" style="width:${inp.width}px">`;
+                    }
+                });
+                box.appendChild(row);
+            }
+            cheatGrid.appendChild(box);
+        });
     }
 
-    document.getElementById('flood-btn').onclick = function() {
-        rickroll();
-    };
+    // --- Panel controls (minimize, close, drag) ---
+    const panelControls = document.createElement('div');
+    panelControls.className = 'lemon-gui-panel-controls';
+    const dragBtn = document.createElement('button');
+    dragBtn.className = 'lemon-gui-panel-btn lemon-gui-drag';
+    dragBtn.title = "Drag";
+    dragBtn.textContent = "⮞";
+    const minBtn = document.createElement('button');
+    minBtn.className = 'lemon-gui-panel-btn lemon-gui-min';
+    minBtn.title = "Minimize";
+    minBtn.textContent = "_";
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'lemon-gui-panel-btn lemon-gui-close';
+    closeBtn.title = "Close";
+    closeBtn.textContent = "✖";
+    panelControls.appendChild(dragBtn);
+    panelControls.appendChild(minBtn);
+    panelControls.appendChild(closeBtn);
 
-    document.getElementById('send-flood-btn').onclick = function() {
-        const amount = parseInt(document.getElementById('flood-amount').value, 10);
-        if(isNaN(amount) || amount < 1) {
-            alert('Please enter a valid positive number.');
-            return;
+    // --- Draggable logic ---
+    let dragging = false, dragOffsetX = 0, dragOffsetY = 0;
+    dragBtn.onmousedown = function(e) {
+        dragging = true;
+        const rect = root.getBoundingClientRect();
+        dragOffsetX = e.clientX - rect.left;
+        dragOffsetY = e.clientY - rect.top;
+        document.body.style.cursor = "move";
+    };
+    document.addEventListener('mousemove', function(e) {
+        if (dragging) {
+            root.style.left = (e.clientX - dragOffsetX) + "px";
+            root.style.top = (e.clientY - dragOffsetY) + "px";
         }
-        rickroll();
+    });
+    document.addEventListener('mouseup', function() {
+        dragging = false;
+        document.body.style.cursor = "";
+    });
+
+    // --- Minimize logic ---
+    let minimized = false;
+    minBtn.onclick = function() {
+        minimized = !minimized;
+        mainPanel.style.display = minimized ? "none" : "flex";
+        sidebar.style.display = minimized ? "none" : "flex";
+        topInputs.style.display = minimized ? "none" : "flex";
+        headerBar.style.display = minimized ? "none" : "flex";
+        minBtn.textContent = minimized ? "◉" : "_";
     };
 
-    document.getElementById('give-tokens-btn').onclick = function() {
-        const tokens = parseInt(document.getElementById('tokens-amount').value, 10);
-        if(isNaN(tokens) || tokens < 1) {
-            alert('Please enter a valid positive number for tokens.');
-            return;
-        }
-        rickroll();
+    // --- Close logic ---
+    closeBtn.onclick = function() {
+        style.remove();
+        root.remove();
+        window.lemonSpecializedActive = false;
     };
 
-    document.getElementById('unlock-all-blooks-btn').onclick = rickroll;
-    document.getElementById('spam-chat-btn').onclick = rickroll;
+    // --- Mode selection logic ---
+    function selectMode(mode, btn) {
+        Array.from(sidebarList.children).forEach(b=>b.classList.remove('lemon-gui-selected'));
+        btn.classList.add('lemon-gui-selected');
+        renderCheatSection(cheatSections[mode] || cheatSections.global);
+    }
 
-    // Play Song button logic - open Drum Show in a background tab
-    document.getElementById('play-song-btn').onclick = function() {
-        window.open('https://www.youtube.com/watch?v=5dA094oAy-g', '_blank');
-        const playerDiv = document.getElementById('lemon-song-player');
-        playerDiv.innerHTML = `<p style="font-size:13px;">Song opened in a new tab: Drum Show by twenty one pilots</p>`;
-    };
+    // --- Initial render ---
+    mainPanel.appendChild(topInputs);
+    mainPanel.appendChild(sectionLabel);
+    mainPanel.appendChild(cheatGrid);
+    mainPanel.appendChild(panelControls);
+
+    root.appendChild(sidebar);
+    root.appendChild(mainPanel);
+    root.appendChild(headerBar);
+
+    document.body.appendChild(root);
+
+    // Select default mode
+    selectMode('global', sidebarList.querySelector('[data-mode="global"]'));
+
+    // Hotkeys
+    document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey && e.key.toLowerCase() === 'e') minBtn.click();
+        if (e.ctrlKey && e.key.toLowerCase() === 'x') closeBtn.click();
+    });
 })();
