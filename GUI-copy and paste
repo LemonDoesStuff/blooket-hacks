@@ -1,0 +1,214 @@
+(function() {
+    if(document.getElementById('lemon-blooket-gui')) return;
+
+    // Create panel container
+    const panel = document.createElement('div');
+    panel.id = 'lemon-blooket-gui';
+    panel.style.position = 'fixed';
+    panel.style.bottom = '30px';
+    panel.style.right = '30px';
+    panel.style.width = '340px';
+    panel.style.background = '#282c34';
+    panel.style.color = '#fff';
+    panel.style.borderRadius = '10px';
+    panel.style.boxShadow = '0 4px 16px rgba(0,0,0,0.3)';
+    panel.style.zIndex = '999999';
+    panel.style.fontFamily = 'sans-serif';
+    panel.style.userSelect = 'none';
+    panel.style.transition = 'opacity 0.2s';
+
+    // Create header
+    const header = document.createElement('div');
+    header.textContent = 'Lemon GUI Panel';
+    header.style.padding = '12px 16px';
+    header.style.fontWeight = 'bold';
+    header.style.background = '#3b4048';
+    header.style.cursor = 'move';
+    header.style.borderTopLeftRadius = '10px';
+    header.style.borderTopRightRadius = '10px';
+
+    // Create close button
+    const closeBtn = document.createElement('button');
+    closeBtn.textContent = '×';
+    closeBtn.style.position = 'absolute';
+    closeBtn.style.top = '8px';
+    closeBtn.style.right = '12px';
+    closeBtn.style.background = 'transparent';
+    closeBtn.style.border = 'none';
+    closeBtn.style.color = '#fff';
+    closeBtn.style.fontSize = '20px';
+    closeBtn.style.cursor = 'pointer';
+    closeBtn.style.fontWeight = 'bold';
+
+    closeBtn.onclick = () => panel.remove();
+
+    // Panel content
+    const content = document.createElement('div');
+    content.style.padding = '16px';
+    content.innerHTML = `
+        <p>Welcome to Lemon's Blooket GUI!</p>
+        <button id="flood-btn" style="
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background: #ffeb3b;
+            color: #282c34;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            margin-top: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        ">Flood Server</button>
+        <div style="margin-top:16px">
+            <label for="flood-amount" style="font-size:14px;">Flood Amount:</label>
+            <input type="number" id="flood-amount" min="1" value="10" style="
+                width: 80px;
+                margin-left: 10px;
+                padding: 6px;
+                border-radius: 4px;
+                border: 1px solid #aaa;
+                font-size: 14px;
+            ">
+            <button id="send-flood-btn" style="
+                padding: 8px 16px;
+                background: #1e90ff;
+                color: #fff;
+                border: none;
+                border-radius: 6px;
+                font-size: 15px;
+                cursor: pointer;
+                font-weight: bold;
+                margin-left: 10px;
+            ">Send Flood</button>
+        </div>
+        <div style="margin-top:16px">
+            <label for="tokens-amount" style="font-size:14px;">Tokens to Give:</label>
+            <input type="number" id="tokens-amount" min="1" value="500" style="
+                width: 80px;
+                margin-left: 10px;
+                padding: 6px;
+                border-radius: 4px;
+                border: 1px solid #aaa;
+                font-size: 14px;
+            ">
+            <button id="give-tokens-btn" style="
+                padding: 8px 16px;
+                background: #4caf50;
+                color: #fff;
+                border: none;
+                border-radius: 6px;
+                font-size: 15px;
+                cursor: pointer;
+                font-weight: bold;
+                margin-left: 10px;
+            ">Give Tokens to Me</button>
+        </div>
+        <button id="unlock-all-blooks-btn" style="
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background: #ff9800;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            margin-top: 16px;
+            cursor: pointer;
+            font-weight: bold;
+        ">Unlock All Blooks</button>
+        <button id="spam-chat-btn" style="
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background: #e91e63;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            margin-top: 12px;
+            cursor: pointer;
+            font-weight: bold;
+        ">Spam Chat</button>
+        <button id="play-song-btn" style="
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background: #00bcd4;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            margin-top: 16px;
+            cursor: pointer;
+            font-weight: bold;
+        ">Play a Song</button>
+        <div id="lemon-song-player" style="margin-top: 16px;"></div>
+        <p style="margin-top:10px;font-size:12px;opacity:0.7;">
+            All buttons are for entertainment. Lemon branding in action!
+        </p>
+    `;
+
+    panel.appendChild(header);
+    panel.appendChild(closeBtn);
+    panel.appendChild(content);
+    document.body.appendChild(panel);
+
+    // Drag logic
+    let isDragging = false, startX, startY, startRight, startBottom;
+    header.onmousedown = function(e) {
+        isDragging = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        startRight = parseInt(panel.style.right);
+        startBottom = parseInt(panel.style.bottom);
+        document.body.style.userSelect = 'none';
+    };
+    document.onmousemove = function(e) {
+        if(isDragging) {
+            panel.style.right = (startRight - (e.clientX - startX)) + 'px';
+            panel.style.bottom = (startBottom - (e.clientY - startY)) + 'px';
+        }
+    };
+    document.onmouseup = function() {
+        isDragging = false;
+        document.body.style.userSelect = '';
+    };
+
+    // Button Rickroll logic
+    function rickroll() {
+        window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ', '_blank');
+    }
+
+    document.getElementById('flood-btn').onclick = function() {
+        rickroll();
+    };
+
+    document.getElementById('send-flood-btn').onclick = function() {
+        const amount = parseInt(document.getElementById('flood-amount').value, 10);
+        if(isNaN(amount) || amount < 1) {
+            alert('Please enter a valid positive number.');
+            return;
+        }
+        rickroll();
+    };
+
+    document.getElementById('give-tokens-btn').onclick = function() {
+        const tokens = parseInt(document.getElementById('tokens-amount').value, 10);
+        if(isNaN(tokens) || tokens < 1) {
+            alert('Please enter a valid positive number for tokens.');
+            return;
+        }
+        rickroll();
+    };
+
+    document.getElementById('unlock-all-blooks-btn').onclick = rickroll;
+    document.getElementById('spam-chat-btn').onclick = rickroll;
+
+    // Play Song button logic - open Drum Show in a background tab
+    document.getElementById('play-song-btn').onclick = function() {
+        window.open('https://www.youtube.com/watch?v=5dA094oAy-g', '_blank');
+        const playerDiv = document.getElementById('lemon-song-player');
+        playerDiv.innerHTML = `<p style="font-size:13px;">Song opened in a new tab: Drum Show by twenty one pilots</p>`;
+    };
+})();
